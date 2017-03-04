@@ -1,0 +1,15 @@
+{
+    "name": "namelesscoder/typo3-cms-multilevel-cache",
+    "type": "typo3-cms-extension",
+    "require": {
+        "typo3/cms": "^7.6|^8"
+    },
+    "autoload": {
+        "psr-4": {
+            "NamelessCoder\\MultilevelCache\\": "Classes/"
+        }
+    },
+    "replace": {
+        "multilevel_cache": "self.version"
+    }
+}
