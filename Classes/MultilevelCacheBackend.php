@@ -4,6 +4,7 @@ namespace NamelessCoder\MultilevelCache;
 use TYPO3\CMS\Core\Cache\Backend\AbstractBackend;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
 use TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface;
+use TYPO3\CMS\Core\Cache\Backend\TransientBackendInterface;
 use TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -11,7 +12,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Class MultilevelCacheBackend
  */
-class MultilevelCacheBackend extends AbstractBackend implements BackendInterface, TaggableBackendInterface
+class MultilevelCacheBackend extends AbstractBackend implements BackendInterface, TaggableBackendInterface, TransientBackendInterface
 {
     /**
      * Array of cache backends and their configurations
@@ -60,6 +61,9 @@ class MultilevelCacheBackend extends AbstractBackend implements BackendInterface
     {
         foreach ($this->backends as $backend) {
             if ($backend['options']['cascade'] ?? true) {
+                if ($backend['instance'] instanceof TransientBackendInterface) {
+                    $data = serialize($data);
+                }
                 $backend['instance']->set($backend['options']['prefix'] ?? '' . $entryIdentifier, $data, $tags, $lifetime);
             }
         }
@@ -77,6 +81,9 @@ class MultilevelCacheBackend extends AbstractBackend implements BackendInterface
             $result = $backend['instance']->get($backend['options']['prefix'] ?? '' . $entryIdentifier);
             if ($result !== false) {
                 $final = $result;
+                if (!$backend['instance'] instanceof TransientBackendInterface) {
+                    $final = unserialize($final);
+                }
                 break;
             } elseif ($backend['options']['cascade'] ?? true) {
                 $delegates[] = $backend;
