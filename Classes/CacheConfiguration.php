@@ -8,34 +8,35 @@ class CacheConfiguration
 {
     /**
      * @param array ...$caches
-     *
      */
     public static function convert(...$caches)
     {
         $target = array_shift($caches);
         $currentConfiguration = static::getCacheConfiguration($target);
-        $newConfiguration = [
-            'frontend' => $currentConfiguration['frontend'],
-            'backend' => MultilevelCacheBackend::class,
-            'options' => [
-                'backends' => []
-            ]
-        ];
-        foreach ($caches as $backendDefinition) {
-            $configuration = [];
-            if (is_array($backendDefinition)) {
-                $configuration = $backendDefinition;
-            } elseif (is_string($backendDefinition)) {
-                $configuration = static::getCacheConfiguration($backendDefinition);
-                if ($backendDefinition === 'cache_runtime') {
-                    $configuration['multilevel']['cascade'] = true;
-                    $configuration['multilevel']['prefix'] = $target;
+
+        $backends = [];
+        foreach ($caches as $cacheDefinition) {
+            if (is_string($cacheDefinition)) {
+                $cacheDefinitionName = $cacheDefinition;
+                $cacheDefinition = static::getCacheConfiguration($cacheDefinitionName);
+                if ($cacheDefinitionName === 'cache_runtime' || ($cacheDefinition['multilevel']['prefix'] ?? false) === true) {
+                    $cacheDefinition['multilevel']['prefix'] = $target;
                 }
             }
-            $newConfiguration['options']['backends'][] = $configuration;
+            $backends[] = $cacheDefinition;
         }
 
-        static::setCacheConfiguration($target, $newConfiguration);
+        static::setCacheConfiguration(
+            $target,
+            [
+                'frontend' => $currentConfiguration['frontend'],
+                'backend' => MultilevelCacheBackend::class,
+                'options' => [
+                    'original' => $target,
+                    'backends' => $backends
+                ]
+            ]
+        );
     }
 
     /**
