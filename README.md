@@ -89,21 +89,21 @@ the behavior of the combined backend:
     [
         'backend' => \TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend::class,
         'options' => [
-            'defaultLifetime' => 86400,
-            'multilevel' => [
-                'flush => true, // Flush this backend when the cache is flushed. Default `true`.
-                'cascade' => true, // Do `set()` and `remove()` also on this backend. Default `true`.
-                'prefix' => 'combo-extbase-object', // All items' IDs are prefixed with this value. Default is empty.
-            ]
+            'defaultLifetime' => 86400
+        ],
+        'multilevel' => [
+            'flush => true, // Flush this backend when the cache is flushed. Default `true`.
+            'cascade' => true, // Do `set()` and `remove()` also on this backend. Default `true`.
+            'prefix' => 'combo-extbase-object', // All items' IDs are prefixed with this value. Default is empty.
         ]
     ],
     [
         'backend' => My\Extension\OffSiteCacheBackend::class,
         'options' => [
-            'defaultLifetime' => 604800,
-            'multilevel' => [
-                'flush => false
-            ]
+            'defaultLifetime' => 604800
+        ],
+        'multilevel' => [
+            'flush => false
         ]
     ]
 );
