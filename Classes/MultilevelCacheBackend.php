@@ -205,6 +205,24 @@ class MultilevelCacheBackend extends AbstractBackend implements BackendInterface
     }
 
     /**
+     * Returns the needed schema for nested backends.
+     *
+     * @return string
+     */
+    public function getTableDefinitions()
+    {
+        $tableDefinitions = '';
+        foreach ($this->backends as $backendConfig) {
+            $backend = $backendConfig['instance'];
+            if (method_exists($backend, 'getTableDefinitions')) {
+                $tableDefinitions .= LF . $backend->getTableDefinitions();
+            }
+        }
+
+        return $tableDefinitions;
+    }
+
+    /**
      * @param array $delegate
      * @param string $entryIdentifier
      * @return string
