@@ -2,7 +2,7 @@
     "name": "namelesscoder/typo3-cms-multilevel-cache",
     "type": "typo3-cms-extension",
     "require": {
-        "typo3/cms": "^7.6|^8|^9"
+        "typo3/cms-core": "^7.6|^8|^9|^10|dev-master"
     },
     "autoload": {
         "psr-4": {
